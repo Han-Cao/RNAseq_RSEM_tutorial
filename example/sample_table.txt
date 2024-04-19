@@ -1,0 +1,7 @@
+sample	file	condition
+A	data/A.rsem.genes.results	Control
+B	data/B.rsem.genes.results	Control
+C	data/C.rsem.genes.results	Control
+D	data/D.rsem.genes.results	Treat
+E	data/E.rsem.genes.results	Treat
+F	data/F.rsem.genes.results	Treat
