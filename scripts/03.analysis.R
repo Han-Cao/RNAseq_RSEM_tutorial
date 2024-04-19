@@ -62,5 +62,5 @@ df_res <- right_join(df_map_gene, df_res, by=c("Gene"))
 df_resLFC <- right_join(df_map_gene, df_resLFC, by=c("Gene"))
 
 write_tsv(df_res, "output/DEG_result.txt")
-write_tsv(df_res, "output/DEG_result_lfcShrink.txt")
+write_tsv(df_resLFC, "output/DEG_result_lfcShrink.txt")
 
