@@ -1,6 +1,6 @@
 # RNAseq data analysis
 
-## Table of content
+## Table of contents
 - [Introduction](#introduction)
 - [Quick start](#quick-start)
 - [Prepare for analysis](#prepare-for-analysis)
