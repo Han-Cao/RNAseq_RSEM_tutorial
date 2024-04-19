@@ -22,21 +22,18 @@ When first run the analysis, please do:
 - [Setup environment](#setup-environment)
 - [Build reference](#build-reference)
 
-Then you can sequentially run the following scripts to quantify gene expression and perform differential gene expression analysis:
+After activate the conda enviroment, you can sequentially run the following scripts to quantify gene expression and perform differential gene expression analysis:
 - [Data preprocessing](#data-preprocessing) : `scripts/01.fastp.sh`
 - [Align RNAseq data and quantify gene expression](#align-rnaseq-data-and-quantify-gene-expression): `scripts/02.star_rsem.sh`
 - [Differential gene expression analysis](#differential-gene-expression-analysis): `scripts/03.diff_exp.sh`
 
-If you are working on a cluster with SLURM, please always submit jobs with `sbatch` command, for example:
-```bash
-sbatch script.sh
-```
+If you are working on a cluster with SLURM, please always submit jobs with `sbatch your_script.sh` command.
 
 ## Prepare for analysis
 ### Setup environment
-Before you start, please make sure you have installed conda on your system. If not, please follow the instructions  to install [conda](https://docs.anaconda.com/free/miniconda/miniconda-install/) or [mamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
+Before you start, please make sure you have installed conda on the system. If not, please follow the instructions  to install [conda](https://docs.anaconda.com/free/miniconda/miniconda-install/) or [mamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
 
-If you have conda installed and initialized, you can create a new environment with the following command:
+If you have conda installed and initialized, you can install the required tools in a new conda environment with the following command:
 ```bash
 conda create -n rnaseq -c bioconda -c conda-forge fastp=0.23.4 star=2.7.10b rsem=1.3.3 samtools=1.20
 ```
@@ -59,16 +56,16 @@ You need to specify the resources to use in the `script.sh` file. For example:
 #SBATCH -c 20
 #SBATCH -o output.log
 ```
-This means you are submitting the job to the `q1` partition, request 1 node for 1 task with 20 cores. The log will be saved in the `output.log` file.
+This means you are submitting the job to the `q1` partition, requesting 1 node for 1 task using 20 cores. The log will be saved in the `output.log` file. Please do not request more resource than the script need and the capability of the server.
 
 ### Raw data requirements
 The scripts are designed to analyze **paired-end** RNAseq data with the following data structure:
 - All fastq files are ended with `_1.fq.gz` and `_2.fq.gz`
-- All fastq files from the same sample are stored in the same folder, with the folder named with the sample name
+- All fastq files from the same sample are stored in the same folder.
 - The parent folder of all samples **ONLY** contains the sample folders
 
 
-For example:
+Correct:
 
 ```bash
 - /path/to/fastq/input/
@@ -80,11 +77,26 @@ For example:
         - Sample2_2.fq.gz
 ```
 
-If your data structure is different, please rename your fastq files or modify the scripts accordingly.
+Incorrect:
+
+```bash
+- /path/to/fastq/input/
+    - Sample1
+        - Sample1_R1.fq.gz  # _R1.fq.gz not works
+        - Sample1_R2.fq.gz  # _R2.fq.gz not works
+    - Sample2
+        - Sample2_1.fq.gz
+        - Sample2_2.fq.gz
+    - Sample3_1.fq.gz       # Create a Sample3 folder for this
+    - Sample3_2.fq.gz       # Create a Sample3 folder for this
+    - anyfiles.txt          # any other files will cause error
+```
+
+If your data is in different structure, please rename your files or modify the scripts accordingly.
 
 
 ### Build reference
-You can use the `scripts/download_files.sh` to download the reference genome and annotation files for Mus musculus from the ENSEMBL FTP website. The script will also build a map of ENSEMBL gene IDs to gene names. You can modify the script to download files for other species. 
+You can use the `scripts/download_files.sh` to download the reference genome and annotation files for Mus musculus from the Ensembl FTP website. The script will also build a map of Ensembl gene IDs to gene names. You can modify the script to download files for other species. 
 
 ```bash
 #!/bin/bash
@@ -375,7 +387,10 @@ write_tsv(df_rsem_gene_counts, "output/gene_expression_matrix_counts.txt")
 write_tsv(df_rsem_gene_tpm, "output/gene_expression_matrix_tpm.txt")
 ```
 
-The differential gene expression analysis can be performed as follows:
+The differential gene expression analysis can be performed by below commands. You may need to modify some parameters to match your desing:
+- `contract` should be `c("column_to_test", "test_condition", "control_condition")`
+- `coef` should be `"[column_to_test]_[test_condition]_vs_[control_condition]"`
+
 ```R
 # DEG analysis
 # load txi to DESeq2
@@ -397,7 +412,7 @@ df_res <- right_join(df_map_gene, df_res, by=c("Gene"))
 df_resLFC <- right_join(df_map_gene, df_resLFC, by=c("Gene"))
 
 write_tsv(df_res, "output/DEG_result.txt")
-write_tsv(df_res, "output/DEG_result_lfcShrink.txt")
+write_tsv(df_resLFC, "output/DEG_result_lfcShrink.txt")
 ```
 
 Finally, the differential gene expression results are saved in:
