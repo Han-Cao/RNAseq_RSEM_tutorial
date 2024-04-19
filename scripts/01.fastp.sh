@@ -22,7 +22,7 @@ do
     # create the output directory if it does not exist
     [[ ! -d "${outpath}/${sample}" ]] && mkdir -p "${outpath}/${sample}"
     # loop all fastq files in the sample directory
-    ls ${inpath}${sample}/*_1.fq.gz | while read fastq
+    ls ${inpath}/${sample}/*_1.fq.gz | while read fastq
     do
         # set names for fq1, fq2, and output name
         fastq=${fastq%_1.fq.gz}
