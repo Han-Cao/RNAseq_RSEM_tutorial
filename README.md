@@ -317,14 +317,14 @@ metadata file:
 - If there are multiple variables to test, you can add more columns and modify the design formula in the R script (see below)
 - The values in the "condition" column need to match the values in `contrast` (see below)
 
-| sample | file                      | condition  |
-|--------|---------------------------|------------|
-| A      | data/A.rsem.genes.results | Control    |
-| B      | data/B.rsem.genes.results | Control    |
-| C      | data/C.rsem.genes.results | Control    |
-| D      | data/D.rsem.genes.results | Treat      |
-| E      | data/E.rsem.genes.results | Treat      |
-| F      | data/F.rsem.genes.results | Treat      |
+| sample | file                          | condition  |
+|--------|-------------------------------|------------|
+| A      | /path/to/A.rsem.genes.results | Control    |
+| B      | /path/to/B.rsem.genes.results | Control    |
+| C      | /path/to/C.rsem.genes.results | Control    |
+| D      | /path/to/D.rsem.genes.results | Treat      |
+| E      | /path/to/E.rsem.genes.results | Treat      |
+| F      | /path/to/F.rsem.genes.results | Treat      |
 
 Gene ID map:
 - This is generated in the step (Build reference)[#build-reference]
