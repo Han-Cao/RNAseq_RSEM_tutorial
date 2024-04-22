@@ -15,7 +15,7 @@
 
 
 ## Introduction
-This repository contains the scripts for RNAseq data processing and differential gene expression analysis. You can find all the scripts to use in the `scripts` folder. The `example` folder contains the example metadata you need to run differential gene expression analysis.
+This repository contains the scripts for RNAseq data processing and differential gene expression analysis. You can find all the scripts to use in the `scripts` folder. The `example` folder contains the example metadata that is required to run differential gene expression analysis.
 
 ## Quick start
 When first run the analysis, please do:
@@ -23,17 +23,17 @@ When first run the analysis, please do:
 - [Build reference](#build-reference)
 
 After activate the conda enviroment, you can sequentially run the following scripts to quantify gene expression and perform differential gene expression analysis:
-- [Data preprocessing](#data-preprocessing) : `scripts/01.fastp.sh`
-- [Align RNAseq data and quantify gene expression](#align-rnaseq-data-and-quantify-gene-expression): `scripts/02.star_rsem.sh`
-- [Differential gene expression analysis](#differential-gene-expression-analysis): `scripts/03.diff_exp.sh`
+- [Data preprocessing](#data-preprocessing) : [01.fastp.sh](scripts/01.fastp.sh)
+- [Align RNAseq data and quantify gene expression](#align-rnaseq-data-and-quantify-gene-expression): [02.star_rsem.sh](scripts/02.star_rsem.sh)
+- [Differential gene expression analysis](#differential-gene-expression-analysis): [03.analysis.R](scripts/03.analysis.R)
 
-If you are working on a cluster with SLURM, please always submit jobs with `sbatch your_script.sh` command.
+If working on a cluster with SLURM, please always submit jobs with `sbatch your_script.sh` command.
 
 ## Prepare for analysis
 ### Setup environment
-Before you start, please make sure you have installed conda on the system. If not, please follow the instructions  to install [conda](https://docs.anaconda.com/free/miniconda/miniconda-install/) or [mamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
+Before you start, please make sure conda is installed on the system. If not, please follow the instructions  to install [conda](https://docs.anaconda.com/free/miniconda/miniconda-install/) or [mamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html).
 
-If you have conda installed and initialized, you can install the required tools in a new conda environment with the following command:
+Once conda has been installed and initialized, you can install the required tools in a new conda environment with the following command:
 ```bash
 conda create -n rnaseq -c bioconda -c conda-forge fastp=0.23.4 star=2.7.10b rsem=1.3.3 samtools=1.20
 ```
@@ -43,7 +43,7 @@ conda activate rnaseq
 ```
 
 ### Work with SLURM
-If you are working on a cluster with SLURM, please **always** submit your jobs with the following command:
+If working on a cluster with SLURM, please **always** submit jobs with the following command:
 ```bash
 sbatch script.sh
 ```
@@ -56,7 +56,7 @@ You need to specify the resources to use in the `script.sh` file. For example:
 #SBATCH -c 20
 #SBATCH -o output.log
 ```
-This means you are submitting the job to the `q1` partition, requesting 1 node for 1 task using 20 cores. The log will be saved in the `output.log` file. Please do not request more resource than the script need and the capability of the server.
+This means submitting the job to the `q1` partition, requesting 1 node for 1 task using 20 cores. The log will be saved in the `output.log` file. Please do not request more resource than the script need and the capability of the server.
 
 ### Raw data requirements
 The scripts are designed to analyze **paired-end** RNAseq data with the following data structure:
@@ -92,11 +92,11 @@ Incorrect:
     - anyfiles.txt          # any other files will cause error
 ```
 
-If your data is in different structure, please rename your files or modify the scripts accordingly.
+If your data is in different structure, please rename the files or modify the scripts accordingly.
 
 
 ### Build reference
-You can use the `scripts/download_files.sh` to download the reference genome and annotation files for Mus musculus from the Ensembl FTP website. The script will also build a map of Ensembl gene IDs to gene names. You can modify the script to download files for other species. 
+Use the [download_files.sh](scripts/download_files.sh) to download the reference genome and annotation files for Mus musculus from the Ensembl FTP website. The script will also build a map of Ensembl gene IDs to gene names. You can modify the script to download files for other species. 
 
 ```bash
 #!/bin/bash
@@ -131,7 +131,7 @@ The above script will generate following reference files:
 - transcript annotation: `Mus_musculus.GRCm39.111.gtf`
 - ID map between ENSEMBL ID and gene symbol: `Mus_musculus.GRCm39.111.id_map.txt`
 
-After downloading the files, you can build the STAR index and RSEM reference by using the `scripts/00.build_ref.sh` script. Please remember to modify the input and output directories in the script before running. Please use the following path as reference input for STAR and RSEM
+After downloading the files, the STAR index and RSEM reference can be built by using the [00.build_ref.sh](scripts/00.build_ref.sh) script. Please remember to modify the input and output directories in the script before running. Please use the following path as reference input for STAR and RSEM
 - STAR: `/path/to/output/reference/`
 - RSEM: `/path/to/output/reference/rsem`
 
@@ -170,14 +170,14 @@ rsem-prepare-reference --gtf $ref_gtf \
 
 ## Data analysis
 ### Data preprocessing
-You can use the `scripts/01.fastp.sh` script to preprocess the raw fastq files and perform quality control. The script will automatically trim adapters and filter low-quality reads.
+Run the [01.fastp.sh](scripts/01.fastp.sh) script to preprocess the raw fastq files and perform quality control. The script will automatically trim adapters and filter low-quality reads.
 
 Clean reads will be saved in the following fastq files and should be used in the downstream analysis:
 - `${outpath}/${sample}/${name}_1_paired.fq.gz`
 - `${outpath}/${sample}/${name}_2_paired.fq.gz`
 
 Quality control reports will be saved in:
-- `${outpath}/${sample}/${name}_fastp.html` for browser view
+- `${outpath}/${sample}/${name}_fastp.html` for browser view. An example can be found [here](example/fastp.html).
 - `${outpath}/${sample}/${name}_fastp.json` for machine-readable format
 
 ```bash
@@ -229,7 +229,7 @@ done
 ```
 
 ### Align RNAseq data and quantify gene expression
-You can use the `scripts/02.star_rsem.sh` script to align the preprocessed fastq files (`*paired.fq.gz`) to the reference genome and quantify gene expression. The script will generate the expression matrix for differential gene expression analysis:
+Run the [02.star_rsem.sh](scripts/02.star_rsem.sh) script to align the preprocessed fastq files (`*paired.fq.gz`) to the reference genome and quantify gene expression. The script will generate the expression matrix for differential gene expression analysis:
 
 - `${outpath}/${sample}/${sample}.rsem.genes.results` for gene-level expression
 - `${outpath}/${sample}/${sample}.rsem.isoforms.results` for isoform-level expression
@@ -300,7 +300,7 @@ done
 ```
 
 ### Differential gene expression analysis
-The `scripts/03.diff_exp.sh` script performs differential gene expression analysis using the R package `DESeq2`. The following R packages are required:
+The [03.analysis.R](scripts/03.analysis.R) script performs differential gene expression analysis using the R package `DESeq2`. The following R packages are required:
 
 ```R
 library(readr)
@@ -310,11 +310,11 @@ library(apeglm)
 library(DESeq2)
 ```
 
-Before you start the analysis, you need to prepare a metadata file of study design, as well as a gene ID map to match ENSEMBL ID to gene symbol. The example files can be found in the `example` folder:
+Before the analysis, you need to prepare a metadata file of study design, as well as a gene ID map to match ENSEMBL ID to gene symbol. The example files can be found in the `example` folder:
 
 metadata file:
 - The column names must be "sample", "file", and "condition" if you don't want to modify the R script
-- If there are multiple variables to test, you can add more columns and modify the design formula in the R script (see below)
+- If there are multiple variables to test, can add more columns and modify the design formula in the R script (see below)
 - The values in the "condition" column need to match the values in `contrast` (see below)
 
 | sample | file                          | condition  |
@@ -387,7 +387,7 @@ write_tsv(df_rsem_gene_counts, "output/gene_expression_matrix_counts.txt")
 write_tsv(df_rsem_gene_tpm, "output/gene_expression_matrix_tpm.txt")
 ```
 
-The differential gene expression analysis can be performed by below commands. You may need to modify some parameters to match your desing:
+The differential gene expression analysis can be performed by below commands. You may need to modify some parameters to match the study design:
 - `contract` should be `c("column_to_test", "test_condition", "control_condition")`
 - `coef` should be `"[column_to_test]_[test_condition]_vs_[control_condition]"`
 
