@@ -177,7 +177,7 @@ Clean reads will be saved in the following fastq files and should be used in the
 - `${outpath}/${sample}/${name}_2_paired.fq.gz`
 
 Quality control reports will be saved in:
-- `${outpath}/${sample}/${name}_fastp.html` for browser view. An example can be found [here](https://htmlpreview.github.io/?https://github.com/Han-Cao/RNAseq_RSEM_tutorial/blob/master/example/fastp.html).
+- `${outpath}/${sample}/${name}_fastp.html` for browser view. An example can be found [here](example/fastp.html).
 - `${outpath}/${sample}/${name}_fastp.json` for machine-readable format
 
 ```bash
